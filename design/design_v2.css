@@ -1,0 +1,37 @@
+/* === Design tokens (Open Color neutrals + Utopia-style fluid type + spacing scale) === */
+:root{
+  --oc-gray-0:#f8f9fa;--oc-gray-1:#f1f3f5;--oc-gray-2:#e9ecef;--oc-gray-3:#dee2e6;--oc-gray-4:#ced4da;
+  --oc-gray-5:#adb5bd;--oc-gray-6:#868e96;--oc-gray-7:#495057;--oc-gray-8:#343a40;--oc-gray-9:#212529;
+  --sp-1:.25rem;--sp-2:.5rem;--sp-3:.75rem;--sp-4:1rem;--sp-5:1.5rem;--sp-6:2rem;--sp-7:3rem;
+  --radius:12px;--radius-sm:8px;
+  --shadow-1:0 1px 2px rgba(0,0,0,.04);--shadow-2:0 2px 8px rgba(0,0,0,.06);
+  --step--1:clamp(.78rem,.75rem + .15vw,.85rem);
+  --step-0:clamp(.92rem,.88rem + .2vw,1rem);
+  --step-1:clamp(1.05rem,1rem + .3vw,1.2rem);
+  --step-2:clamp(1.3rem,1.2rem + .5vw,1.6rem);
+  --surface:#fff;--surface-alt:var(--oc-gray-0);--border:var(--oc-gray-3);--text:var(--oc-gray-9);--text-mut:var(--oc-gray-6);
+}
+/* Dark-mode token overrides intentionally removed: this blog standardizes on
+   always-white-background/always-black-text regardless of OS theme. A
+   prefers-color-scheme:dark block here previously flipped --surface-alt/etc
+   to dark values while text stayed forced black (see BW-override fix),
+   producing invisible black-on-dark text in published posts. */
+
+/* === Card (Tremor recipe: generous padding, subtle border, near-invisible shadow) === */
+.dv2-card{background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius);
+  padding:var(--sp-5) var(--sp-5);box-shadow:var(--shadow-1)}
+.dv2-card b{font-size:var(--step-2);display:block;color:var(--text)}
+.dv2-card span{color:var(--text-mut);font-size:var(--step--1)}
+
+/* === Table (sticky header + zebra, two-rule recipe) === */
+.dv2-table{border-collapse:collapse;width:100%;font-size:var(--step--1)}
+.dv2-table thead th{position:sticky;top:0;background:var(--oc-gray-9);color:#fff;padding:var(--sp-2) var(--sp-3);
+  text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+.dv2-table thead th:after{content:'⇅';opacity:.4;font-size:.8em;margin-left:4px}
+.dv2-table thead th.no-sort:after{content:''}
+.dv2-table td{padding:var(--sp-2) var(--sp-3);border-bottom:1px solid var(--border)}
+.dv2-table tbody tr:nth-child(even){background:var(--surface-alt)}
+.dv2-table tbody tr:hover{background:var(--oc-gray-1)}
+
+/* === Sparkline label row === */
+.dv2-icon{width:1em;height:1em;stroke:currentColor;stroke-width:2;fill:none;vertical-align:-2px}
