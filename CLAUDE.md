@@ -2,6 +2,19 @@
 
 Guidance for Claude Code sessions working in this repository.
 
+## Working in this repo
+
+- Single source module: `scripts/hsn8_signal_analysis.py` (pure stages `qualifying_rows`,
+  `quantity_fields`, `percentile_75`, `classify_signal`, `group_by_chapter`; I/O in
+  `load_value_file`, `load_qty_file`, `write_result`; CLI in `main`).
+- Run: `python scripts/hsn8_signal_analysis.py out.json --import-value … --export-value … --import-qty …`
+  (defaults point at the TradeStat filenames in `~/Downloads`).
+- Verify: `pytest -q` and `ruff check .` (deps: `pip install -r requirements.txt pytest ruff`).
+  Keep `from __future__ import annotations` — the script must stay Python 3.9 compatible.
+- `data/*.json` and `data/*.html` are generated snapshots used by a published article: do not
+  regenerate or edit them in a refactor; the HTML carries `is_label`/`is_conf` fields the script
+  does not emit.
+
 <!-- source-fetch-toolkit:v1 (managed by ~/bin/add_source_fetch_section.py — edit there, not here) -->
 ## Source fetching for data collection & literature surveys
 
