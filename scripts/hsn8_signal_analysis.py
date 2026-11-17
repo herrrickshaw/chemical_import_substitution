@@ -40,33 +40,34 @@ CH_NAMES = {
 }
 
 RATIONALE_RULES = [
-    (r'\b(UREA|DAP|DIAMONM|MURIATE|POTASH|POTASSIUM CHLORIDE|SUPERPHOSPHAT|ROCK PHOSPHATE|SULPHATE OF POTASH|NPK|FERTLSR|FERTILIS)\b',
+    (r'\b(UREA|DAP|DIAMONM|MURIATE|POTASH|POTASSIUM CHLORIDE|SUPERPHOSPHAT\w*|ROCK PHOSPHATE|SULPHATE OF POTASH|NPK|FE?RTLSR\w*|FERTILI[SZ]\w*)\b',
      'Fertiliser feedstock/finished — India lacks phosphate rock & potash reserves; imports are structural, not import-substitutable without mining tie-ups (Morocco/Jordan/Canada/Belarus).'),
     (r'\b(GOLD|PLATINUM|RHODIUM|PALLADIUM|SILVER|NOBLE METAL)\b',
      'Precious/noble metal — natural-resource constrained; India has negligible reserves, substitution means recycling/urban-mining not manufacturing.'),
-    (r'\b(POLYPROPYLENE|POLYETHYLENE|PVC|POLYCARBONAT|POLYMER|COPOLYMER|RESIN|ETHYLENE|PROPYLENE)\b',
+    (r'\b(POLYPROPYLENE|POLYETHYLENE|PVC|POLYCARBONAT\w*|POLYMERS?|COPOLYMERS?|RESINS?|ETHYLENE|PROPYLENE)\b',
      'Base petrochemical/polymer — cracker capacity gap; substitutable via new naphtha/gas cracker + downstream polymer trains (PLI/PCPIR candidate).'),
-    (r'\b(BENZENE|STYRENE|TOLUENE|XYLENE|METHANOL|ALCOHOL|ACETIC|FORMALDEHYDE|ACRYLIC|PHENOL)\b',
+    (r'\b(BENZENE|STYRENE|TOLUENE|XYLENE|METHANOL|ALCOHOLS?|ACETIC|FORMALDEHYDE|ACRYLIC|PHENOLS?)\b',
      'Basic organic intermediate — aromatics/methanol value chain; substitutable with refinery-integrated petrochemical capacity.'),
-    (r'\b(INSECTICID|FUNGICID|HERBICID|PESTICID|AGROCHEM|CARTAP|MANCOZEB)\b',
+    (r'\b(INSECTICID\w*|FUNGICID\w*|HERBICID\w*|PESTICID\w*|AGROCHEM\w*|CARTAP|MANCOZEB)\b',
      'Agrochemical technical/formulation — patent-expired generics; substitutable via technical-grade manufacturing (China+1 opportunity).'),
-    (r'\b(DYE|PIGMENT|COLOUR|COLORANT|PHATHALOCYANINE|PATHALOCYANINE)\b',
+    (r'\b(DYES?|PIGMENTS?|COLOURS?|COLORANTS?|PHATHALOCYANINE|PATHALOCYANINE)\b',
      'Specialty dye/pigment — process-technology & environmental-compliance gap (dye intermediates are pollution-intensive); substitutable with clean-tech investment.'),
-    (r'\b(VITAMIN|ANTIBIOTIC|BULK DRUG|API|PHARMA|STEROID|HORMONE)\b',
+    (r'\b(VITAMINS?|ANTIBIOTICS?|BULK DRUGS?|API|PHARMA\w*|STEROIDS?|HORMONES?)\b',
      'Pharma API/intermediate — precursor-chemistry dependency on China; strategic substitution priority (PLI-for-APIs scheme already targets this).'),
-    (r'\b(ACID)\b',
+    (r'\b(ACIDS?)\b',
      'Industrial acid — commodity intermediate; substitutable via capacity addition, often import-parity priced so investment case is thin unless anti-dumping applies.'),
-    (r'\b(OIL|ESSENTIAL OIL|PERFUM|FRAGRANC|AROMATIC)\b',
+    (r'\b(OIL|ESSENTIAL OILS?|PERFUM\w*|FRAGRANC\w*|AROMATIC)\b',
      'Essential oil/fragrance compound — agro-botanical or specialty-synthesis input; partly substitutable via natural-farming linkages (lavender/lemongrass missions).'),
-    (r'\b(ENZYME|CATALYST|REAGENT|DIAGNOSTIC)\b',
+    (r'\b(ENZYMES?|CATALYSTS?|REAGENTS?|DIAGNOSTIC)\b',
      'Catalyst/enzyme/diagnostic reagent — high-IP specialty chemistry; substitution needs licensed tech transfer, not commodity capacity.'),
-    (r'\b(WAX|SOAP|SURFACE|SURFACTANT|POLISH)\b',
+    (r'\b(WAX(?:ES)?|SOAPS?|SURFACE|SURFACTANTS?|POLISH(?:ES)?)\b',
      'Surfactant/specialty formulation — oleochemical feedstock or IP-licensed formulation; moderate substitution potential via oleochemical integration.'),
     (r'\b(RUBBER|LATEX)\b',
      'Rubber chemical/latex-linked input — natural rubber deficit compounds the synthetic-chemical gap.'),
     (r'\b(CARBON BLACK|ACTIVATED CARBON)\b',
      'Carbon-based industrial input — feedstock (CBFS/coal) linked; substitutable with refinery-integrated carbon black capacity.'),
 ]
+# Truncated stems carry \w* and nouns an optional plural: \b...\b alone never matched 'PESTICIDES'.
 RATIONALE_DEFAULT = 'Chemical intermediate/speciality — deficit driven by feedstock, scale-economics or technology gap; needs case-by-case investment screening.'
 
 
