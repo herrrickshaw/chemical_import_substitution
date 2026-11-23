@@ -1,0 +1,10 @@
+[run]
+source = scripts
+omit =
+    tests/*
+    */conftest.py
+    test_*.py
+
+[report]
+exclude_lines =
+    pragma: no cover
