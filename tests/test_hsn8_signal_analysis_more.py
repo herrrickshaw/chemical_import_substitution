@@ -51,6 +51,20 @@ def test_load_value_file_skips_first_three_header_rows(tmp_path):
     assert "11111111" not in hs and "29051100" in hs
 
 
+def test_loaders_ignore_codes_sitting_in_the_three_header_rows(tmp_path):
+    for loader, width in ((h.load_value_file, 8), (h.load_qty_file, 7)):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        for code in ("11111111", "22222222", "33333333"):             # header rows 1-3 happen to hold 8-char codes
+            ws.append([0, code, "n"] + [1] * (width - 3))
+        ws.append([1, "44444444", "n"] + [1] * (width - 3))
+        p = tmp_path / f"{loader.__name__}.xlsx"
+        wb.save(p)
+        got = loader(str(p))
+        keys = [r["hs"] for r in got] if isinstance(got, list) else list(got)
+        assert keys == ["44444444"], loader.__name__
+
+
 def test_load_qty_file_maps_units_and_defaults(tmp_path):
     p = _xlsx(tmp_path / "q.xlsx", [
         (1, "29051100", "M", "KGS", 100.0, 60.0, -40.0),
@@ -104,6 +118,7 @@ def test_words_embedded_in_other_words_do_not_match():
     assert h.classify_rationale("BOILERPLATE") == h.RATIONALE_DEFAULT      # contains OIL but not as a word
     assert h.classify_rationale("RAPIDLY") == h.RATIONALE_DEFAULT          # contains API
     assert h.classify_rationale("SPOLISHED") == h.RATIONALE_DEFAULT
+    assert h.classify_rationale("MARIGOLD EXTRACT") == h.RATIONALE_DEFAULT  # GOLD inside a word
 
 
 def test_chapter_tables_are_consistent():
@@ -121,16 +136,16 @@ def _o(fy25, fy26, qg, pg):
     (_o(100, 90, -10.01, 5), 1e9, "A_SCISSORS"),
     (_o(100, 90, -9.99, 5), 1e9, "E_NO_CLEAR_SIGNAL"),                # volume not falling enough
     (_o(100, 90, -10, 4.99), 1e9, "E_NO_CLEAR_SIGNAL"),               # price not rising enough
-    (_o(100, 95, 0, -8), 95, "B_INELASTIC_TARGET"),                   # |pg| <= 8, value exactly -5%: vg > -5 fails
+    (_o(100, 95, 0, -8), 95, "E_NO_CLEAR_SIGNAL"),                    # |pg| <= 8 but value exactly -5%: vg > -5 fails
     (_o(100, 95.01, 0, -8), 95.01, "B_INELASTIC_TARGET"),             # imp_fy26 == p75 counts (>=)
     (_o(100, 95.0, 0, 0), 95.01, "E_NO_CLEAR_SIGNAL"),                # just under the 75th percentile
     (_o(100, 115, 15, 0), 1e9, "D_DEEPENING"),
     (_o(100, 114.99, 15, 0), 1e9, "E_NO_CLEAR_SIGNAL"),
     (_o(100, 115, 14.99, 0), 1e9, "E_NO_CLEAR_SIGNAL"),
+    (_o(100, 100, 0, -8.5), 100, "E_NO_CLEAR_SIGNAL"),                # a big price DROP is not "flat price"
+    (_o(100, 100, 0, -8), 100, "B_INELASTIC_TARGET"),
 ])
 def test_classify_signal_boundaries(o, p75, sig):
-    if sig == "B_INELASTIC_TARGET" and o["imp_fy26"] == 95:
-        sig = "E_NO_CLEAR_SIGNAL"                                      # -5.0% is not > -5: excluded
     assert h.classify_signal(o, p75) == sig
 
 
@@ -195,6 +210,17 @@ def test_build_without_usable_quantity_is_insufficient_data(tmp_path, qrow):
     o = _flat(_build(tmp_path, [(1, "29000001", "A", 5.0, 0, 6.0, 0, 20.0)], [], qrow))["29000001"]
     assert o["qty25"] is None and o["unit"] is None and o["unit_price_fy26"] is None
     assert o["price_growth_pct"] is None and o["is_signal"] == "C_INSUFFICIENT_DATA"
+
+
+def test_build_unit_price_precision_and_missing_quantity_growth(tmp_path):
+    imp = [(1, "29000001", "A", 1.0, 0, 2.0, 0, 100.0), (2, "29000002", "B", 1.0, 0, 2.0, 0, 100.0)]
+    qty = [(1, "29000001", "A", "KGS", 3.0, 7.0, 133.3), (2, "29000002", "B", "KGS", 3.0, 7.0, None)]
+    got = _flat(_build(tmp_path, imp, [], qty))
+    a = got["29000001"]
+    assert (a["unit_price_fy25"], a["unit_price_fy26"]) == (0.3333, 0.2857)       # 4 decimal places
+    assert a["price_growth_pct"] == -14.3
+    b = got["29000002"]
+    assert b["qty_growth_pct"] is None and b["is_signal"] == "C_INSUFFICIENT_DATA"   # None is kept, not coerced to 0
 
 
 def test_build_zero_import_base_gives_no_price_growth(tmp_path):
